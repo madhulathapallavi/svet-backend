@@ -3,14 +3,23 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+var cors = require('cors');
+
+
+const bodyParser = require("body-parser");
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 
 
+
+
 var detailsRouter = require('./routes/userdetails');
 
 var app = express();
+
+fileUpload = require('express-fileupload') 
+app.use(fileUpload())
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -21,10 +30,28 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(cors());
+
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({
+    extended: true
+}));
+
+
+const Multer = require('multer');
+const multer = Multer({
+  storage: Multer.memoryStorage,
+  limits: {
+    fileSize: 5 * 1024 * 1024
+  }
+});
+
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/userdetails', detailsRouter);
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
